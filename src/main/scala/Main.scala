@@ -65,4 +65,69 @@ object Main extends App {
     }
     iter(a, 0)
   }
+
+  def product(term: Float => Float,
+              a: Float,
+              next: Float => Float,
+              b: Float): Float = {
+    if (a > b) {
+      1
+    } else {
+      term(a) * product(term, next(a), next, b)
+    }
+  }
+  def productIter(term: Float => Float,
+                  a: Float,
+                  next: Float => Float,
+                  b: Float): Float = {
+    @tailrec
+    def iter(a: Float, acm: Float): Float = {
+      if (a > b) {
+        acm
+      } else {
+        iter(next(a), term(a) * acm)
+      }
+    }
+    iter(a, 1)
+  }
+  println(product({ x =>
+    x
+  }, 1, { x =>
+    x + 1
+  }, 10))
+  def pi(n: Float): Float = {
+    // 分子:
+    // 0, 1 -> 2
+    // 2, 3 -> 4
+    // 4, 5 -> 6
+    // 6, 7 -> 8
+    // …
+    // 偶数なら2, 奇数なら1を足せば良い
+    // 分母
+    // 1, 2 -> 3
+    // 3, 4 -> 5
+    // 5, 6 -> 7
+    // 奇数なら2, 偶数なら1を足せば良い
+    def molecule(n: Float): Float = {
+      if (n.asInstanceOf[Int] % 2 == 0) {
+        n + 2
+      } else {
+        n + 1
+      }
+    }
+    def denominator(n: Float): Float = {
+      if (n.asInstanceOf[Int] % 2 == 0) {
+        n + 1
+      } else {
+        n + 2
+      }
+    }
+    def pik(k: Float): Float = {
+      molecule(k) / denominator(k)
+    }
+    productIter(pik, 1, { x =>
+      x + 1
+    }, n) * 4
+  }
+  println(pi(100000))
 }
