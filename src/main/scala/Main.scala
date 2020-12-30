@@ -207,7 +207,6 @@ object Main extends App {
       println(filter(a.asInstanceOf[Int]))
       println(a)
       if (filter(a.asInstanceOf[Int])) {
-        println(a)
         combiner(
           term(a),
           filAccumulate(filter, combiner, nullVal, term, next(a), next, b)
@@ -231,7 +230,6 @@ object Main extends App {
         acm
       } else {
         if (filter(a.asInstanceOf[Int])) {
-          println(a)
           iter(next(a), combiner(term(a), acm))
         } else {
           iter(next(a), acm)
@@ -253,12 +251,22 @@ object Main extends App {
       true
     }
   }
-
+  def gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
   println(filAccumulateIter(isPrime, { (x, y) =>
     x + y
   }, 0, { x =>
     x * x
   }, 0, { x =>
+    x + 1
+  }, 10))
+
+  println(filAccumulateIter({ i =>
+    10 > i && gcd(i, 10) == 1
+  }, { (x, y) =>
+    x * y
+  }, 1, { x =>
+    x
+  }, 1, { x =>
     x + 1
   }, 10))
 }
