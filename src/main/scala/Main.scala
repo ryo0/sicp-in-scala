@@ -130,4 +130,66 @@ object Main extends App {
     }, n) * 4
   }
   println(pi(100000))
+
+  def accumulate(combiner: (Float, Float) => Float,
+                 nullVal: Float,
+                 term: Float => Float,
+                 a: Float,
+                 next: Float => Float,
+                 b: Float): Float = {
+    if (a > b) {
+      nullVal
+    } else {
+      combiner(term(a), accumulate(combiner, nullVal, term, next(a), next, b))
+    }
+  }
+
+  def accumulateIter(combiner: (Float, Float) => Float,
+                     nullVal: Float,
+                     term: Float => Float,
+                     a: Float,
+                     next: Float => Float,
+                     b: Float): Float = {
+    @tailrec
+    def iter(a: Float, acm: Float): Float = {
+      if (a > b) {
+        acm
+      } else {
+        iter(next(a), combiner(term(a), acm))
+      }
+    }
+    iter(a, nullVal)
+  }
+
+  def sum2(term: Float => Float,
+           a: Float,
+           next: Float => Float,
+           b: Float): Float = {
+    accumulate({ (x, y) =>
+      x + y
+    }, 0, term, a, next, b)
+  }
+
+  def sum2Iter(term: Float => Float,
+               a: Float,
+               next: Float => Float,
+               b: Float): Float = {
+    accumulateIter({ (x, y) =>
+      x + y
+    }, 0, term, a, next, b)
+  }
+
+  def simp2(a: Float, b: Float, n: Int, f: Float => Float): Float = {
+    def h(): Float = {
+      (b - a) / n
+    }
+    def inc(n: Float): Float = {
+      n + 1
+    }
+    def yk(k: Float): Float = {
+      co(k.asInstanceOf[Int]) * f(a + k * h)
+    }
+    (h() / 3) * (yk(0) + yk(n) + sum2Iter(yk, 1, inc, n - 1))
+  }
+  println(simp2(0, 1, 10000, cube))
 }
