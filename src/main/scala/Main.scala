@@ -1,4 +1,5 @@
 import scala.annotation.tailrec
+import scala.math.sqrt
 
 object Main extends App {
   println("hello, world")
@@ -192,4 +193,72 @@ object Main extends App {
     (h() / 3) * (yk(0) + yk(n) + sum2Iter(yk, 1, inc, n - 1))
   }
   println(simp2(0, 1, 10000, cube))
+
+  def filAccumulate(filter: Int => Boolean,
+                    combiner: (Float, Float) => Float,
+                    nullVal: Float,
+                    term: Float => Float,
+                    a: Float,
+                    next: Float => Float,
+                    b: Float): Float = {
+    if (a > b) {
+      nullVal
+    } else {
+      println(filter(a.asInstanceOf[Int]))
+      println(a)
+      if (filter(a.asInstanceOf[Int])) {
+        println(a)
+        combiner(
+          term(a),
+          filAccumulate(filter, combiner, nullVal, term, next(a), next, b)
+        )
+      } else {
+        filAccumulate(filter, combiner, nullVal, term, next(a), next, b)
+      }
+    }
+  }
+
+  def filAccumulateIter(filter: Int => Boolean,
+                        combiner: (Float, Float) => Float,
+                        nullVal: Float,
+                        term: Float => Float,
+                        a: Float,
+                        next: Float => Float,
+                        b: Float): Float = {
+    @tailrec
+    def iter(a: Float, acm: Float): Float = {
+      if (a > b) {
+        acm
+      } else {
+        if (filter(a.asInstanceOf[Int])) {
+          println(a)
+          iter(next(a), combiner(term(a), acm))
+        } else {
+          iter(next(a), acm)
+        }
+      }
+    }
+    iter(a, nullVal)
+  }
+
+  def isPrime(num: Int): Boolean = {
+    if (num == 2) {
+      true
+    } else if (num == 1 || num % 2 == 0) {
+      false
+    } else {
+      (3L to sqrt(num).toLong).filter(n => n % 2 != 0).foreach { e =>
+        if (num % e == 0) return false
+      }
+      true
+    }
+  }
+
+  println(filAccumulateIter(isPrime, { (x, y) =>
+    x + y
+  }, 0, { x =>
+    x * x
+  }, 0, { x =>
+    x + 1
+  }, 10))
 }
