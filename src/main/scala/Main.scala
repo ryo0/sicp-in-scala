@@ -81,4 +81,39 @@ object Main extends App {
   println(q1_36_2()) //counter: 7
 //  x = log(1000)/log(x)
 //  x = (x * log(x) + log(1000)) / 2 * log(x)
+  def countFrac(n: Int => Float, d: Int => Float, k: Int): Float = {
+    def iter(i: Int): Float = {
+      val nk = n(k)
+      val dk = d(k)
+      if (i == k) {
+        nk / dk
+      } else {
+        nk / (dk + iter(i + 1))
+      }
+    }
+    iter(0)
+  }
+  println(countFrac({ _ =>
+    1f
+  }, { _ =>
+    1f
+  }, 1000))
+  def countFrac2(n: Int => Float, d: Int => Float, k: Int): Float = {
+    @tailrec
+    def iter(i: Int, acm: Float): Float = {
+      val nk = n(k)
+      val dk = d(k)
+      if (i == 0) {
+        acm
+      } else {
+        iter(i - 1, nk / (dk + acm))
+      }
+    }
+    iter(k, 0f)
+  }
+  println(countFrac2({ _ =>
+    1f
+  }, { _ =>
+    1f
+  }, 1000))
 }
