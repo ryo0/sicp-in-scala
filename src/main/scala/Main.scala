@@ -83,8 +83,8 @@ object Main extends App {
 //  x = (x * log(x) + log(1000)) / 2 * log(x)
   def countFrac(n: Int => Float, d: Int => Float, k: Int): Float = {
     def iter(i: Int): Float = {
-      val nk = n(k)
-      val dk = d(k)
+      val nk = n(i)
+      val dk = d(i)
       if (i == k) {
         nk / dk
       } else {
@@ -101,10 +101,10 @@ object Main extends App {
   def countFrac2(n: Int => Float, d: Int => Float, k: Int): Float = {
     @tailrec
     def iter(i: Int, acm: Float): Float = {
-      val nk = n(k)
-      val dk = d(k)
-      if (i == 0) {
-        acm
+      val nk = n(i)
+      val dk = d(i)
+      if (i == 1) {
+        nk / (dk + acm)
       } else {
         iter(i - 1, nk / (dk + acm))
       }
@@ -116,4 +116,27 @@ object Main extends App {
   }, { _ =>
     1f
   }, 1000))
+
+  def napierD(n: Int): Float = {
+    // 1 -> 1
+    // 2 -> 2
+    // 3, 4 -> 1
+    // 5 -> 4
+    // 6, 7 -> 1
+    // 8 -> 6
+    // 9, 10 -> 1
+    // 3で割ったあまりが0 or 1 -> 1
+    // 3で割ったあまりが2 -> (商+1)*2
+    if (n % 3 == 2) {
+      (n / 3 + 1) * 2
+    } else {
+      1
+    }
+  }
+  for (i <- 1 to 10) {
+    println(napierD(i))
+  }
+  println(countFrac2({ _ =>
+    1f
+  }, napierD, 1000) + 2)
 }
