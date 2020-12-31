@@ -180,4 +180,47 @@ object Main extends App {
   println(nExp(nthRoot(2, 4, 2), 4))
   println(nExp(nthRoot(2, 5, 2), 5))
 //  https://www.serendip.ws/archives/491
+  def iterativeImprove(
+    judge: (Double, Double) => Boolean,
+    improver: Double => Double
+  ): (Double, Double) => Double = {
+    def iter(x: Double, y: Double): Double = {
+      if (judge(x, y)) { x } else { iter(y, improver(y)) }
+    }
+    iter
+  }
+  def fixedPoint2(f: Double => Double, firstGuess: Double): Double = {
+    iterativeImprove(areClose, f)(firstGuess, f(firstGuess))
+  }
+  def newtonMethod2(g: Double => Double, guess: Double): Double = {
+    fixedPoint2(newtonTransform(g), guess)
+  }
+
+  def sqrt3(x: Double): Double = {
+    newtonMethod2({ y =>
+      (y * y - x)
+    }, 1.0)
+  }
+  println(sqrt3(2.0))
+
+  def sqrt4(x: Double): Double = {
+    def improver(guess: Double, x: Double): Double = {
+      (guess + x / guess) / 2
+    }
+    def judge(guess: Double, x: Double): Boolean = {
+      math.abs(guess * guess - x) < 0.001
+    }
+    def iterativeImprove(
+      judge: (Double, Double) => Boolean,
+      improver: (Double, Double) => Double
+    ): (Double, Double) => Double = {
+      @tailrec
+      def iter(x: Double, y: Double): Double = {
+        if (judge(x, y)) { x } else { iter(improver(x, y), y) }
+      }
+      iter
+    }
+    iterativeImprove(judge, improver)(1.0, x)
+  }
+  println(sqrt4(2.0))
 }
