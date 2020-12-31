@@ -251,6 +251,7 @@ object s1_3_1 {
       true
     }
   }
+  @tailrec
   def gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
   println(filAccumulateIter(isPrime, { (x, y) =>
     x + y
